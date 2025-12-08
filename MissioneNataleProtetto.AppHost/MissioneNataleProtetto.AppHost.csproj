@@ -1,4 +1,4 @@
-<Project Sdk="Aspire.AppHost.Sdk/13.0.0">
+<Project Sdk="Aspire.AppHost.Sdk/13.0.2">
 
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
@@ -9,15 +9,14 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\MissioneNataleProtetto.ApiService\MissioneNataleProtetto.ApiService.csproj" />
 		<ProjectReference Include="..\MissioneNataleProtetto.AuthSample1\MissioneNataleProtetto.AuthSample1.csproj" />
 		<ProjectReference Include="..\MissioneNataleProtetto.AuthSample2\MissioneNataleProtetto.AuthSample2.csproj" />
 		<ProjectReference Include="..\MissioneNataleProtetto.AuthSample3\MissioneNataleProtetto.AuthSample3.csproj" />
-		<ProjectReference Include="..\MissioneNataleProtetto.Web\MissioneNataleProtetto.Web.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Aspire.Hosting.SqlServer" Version="13.0.0" />
+		<PackageReference Include="Aspire.Hosting.Keycloak" Version="13.0.2-preview.1.25603.5" />
+		<PackageReference Include="Aspire.Hosting.SqlServer" Version="13.0.2" />
 	</ItemGroup>
 
 </Project>
