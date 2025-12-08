@@ -22,13 +22,13 @@ internal static class IdentityComponentsEndpointRouteBuilderExtensions
         {
             var postLogoutRedirectUri = $"{context.Request.Scheme}://{context.Request.Host}/Account/logout-completed";
 
+           
             // Recupera l'id_token dalla sessione (necessario per il logout da Keycloak)
             var idToken = await context.GetTokenAsync(OpenIdConnectDefaults.AuthenticationScheme, "id_token");
 
             // Costruisci l'URL di logout di Keycloak
-            var keycloakBaseUrl = "http://keycloak-missionenataleprotetto.dev.localhost:8080";
-            var realm = "XMasDev";
-            var logoutUri = $"{keycloakBaseUrl}/realms/{realm}/protocol/openid-connect/logout" +
+            var keycloakBaseUrl = configuration["Oidc:Authority"];
+            var logoutUri = $"{keycloakBaseUrl}/protocol/openid-connect/logout" +
                            $"?post_logout_redirect_uri={Uri.EscapeDataString(postLogoutRedirectUri)}" +
                            (idToken != null ? $"&id_token_hint={idToken}" : "");
 

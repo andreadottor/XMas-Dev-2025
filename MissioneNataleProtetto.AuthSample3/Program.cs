@@ -1,3 +1,5 @@
+using Duende.IdentityModel.Client;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -6,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
+using MissioneNataleProtetto.AuthSample3;
 using MissioneNataleProtetto.AuthSample3.Components;
 using MissioneNataleProtetto.AuthSample3.Components.Account;
 using System.IdentityModel.Tokens.Jwt;
@@ -22,6 +25,9 @@ builder.Services.AddRazorComponents()
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityRedirectManager>();
 
+var clientId = builder.Configuration["Oidc:ClientId"];
+var clientSecret = builder.Configuration["Oidc:ClientSecret"];
+
 builder.Services.AddAuthentication(options =>
                 {
                     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -35,14 +41,71 @@ builder.Services.AddAuthentication(options =>
                     options.Cookie.HttpOnly = true;
                     options.LoginPath = string.Empty;
                     options.LogoutPath = "/account/logout";
+                    options.Events = new CookieAuthenticationEvents()
+                    {
+                        OnValidatePrincipal = async context =>
+                        {
+                            // https://auth0.com/blog/exploring-auth0-aspnet-core-authentication-sdk/
+                            if (context.Properties.Items.TryGetValue(".Token.access_token", out string? accessToken))
+                            {
+                                if (context.Properties.Items.TryGetValue(".Token.refresh_token", out string? refreshToken))
+                                {
+                                    // this event is fired everytime the cookie has been validated by the cookie middleware, so basically during every authenticated request.
+                                    // the decryption of the cookie has already happened so we have access to the identity + user claims
+                                    // and cookie properties - expiration, etc..
+                                    // source: https://github.com/mderriey/aspnet-core-token-renewal/blob/2fd9abcc2abe92df2b6c4374ad3f2ce585b6f953/src/MvcClient/Startup.cs#L57
+                                    var now = DateTimeOffset.UtcNow;
+                                    var exp = context.Properties.ExpiresUtc.GetValueOrDefault().ToUnixTimeSeconds();
+                                    var expiresAt = DateTimeOffset.Parse(context.Properties.Items[".Token.expires_at"]!);
+                                    var expiresAtUnixSeconds = DateTimeOffset.Parse(context.Properties.Items[".Token.expires_at"]!).ToUnixTimeSeconds();
+
+                                    var leeway = 120;
+                                    var difference = DateTimeOffset.Compare(expiresAt, now.AddSeconds(leeway));
+                                    var isExpired = difference <= 0;
+
+                                    if (isExpired && !string.IsNullOrWhiteSpace(refreshToken)) // session cookie expired?
+                                    {
+                                        //var keycloakServiceClient = context.HttpContext.RequestServices.GetRequiredService<KeycloakServiceClient>();
+                                        var keycloakServiceClient = context.HttpContext.RequestServices.GetRequiredService<HttpClient>();
+
+                                        var response = await keycloakServiceClient.RequestRefreshTokenAsync(new RefreshTokenRequest
+                                        {
+                                            Address      = "https+http://keycloak/realms/XMasDev/protocol/openid-connect/token",
+                                            ClientId     = clientId!,
+                                            ClientSecret = clientSecret,
+                                            RefreshToken = refreshToken
+                                        }).ConfigureAwait(false);
+
+                                        if (!response.IsError)
+                                        {
+                                            var expiresIn = DateTimeOffset.UtcNow.AddSeconds(response.ExpiresIn);
+                                            var validTo = ((DateTimeOffset)new JwtSecurityToken(response.AccessToken).ValidTo);
+
+                                            context.Properties.UpdateTokenValue("access_token", response.AccessToken!);
+                                            context.Properties.UpdateTokenValue("refresh_token", response.RefreshToken!);
+                                            context.Properties.UpdateTokenValue("id_token", response.IdentityToken!);
+                                            context.Properties.UpdateTokenValue("expires_at", validTo.ToString("o"));
+                                            context.Properties.ExpiresUtc = validTo;
+                                            context.ShouldRenew = true;
+                                        }
+                                        else
+                                        {
+                                            context.RejectPrincipal();
+                                            return;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    };
                 })
                 .AddKeycloakOpenIdConnect(
                     serviceName: "keycloak",
                     realm: "XMasDev",
                     options =>
                     {
-                        options.ClientId = "missionenataleprotetto";
-                        options.ClientSecret = "1vN1VIgowcNwnWxL4ZAjeRz0JTOEP7y6";
+                        options.ClientId = clientId;
+                        options.ClientSecret = clientSecret;
                         options.ResponseType = OpenIdConnectResponseType.Code;
                         options.SignedOutRedirectUri = "/account/logout-completed";
 
@@ -63,12 +126,13 @@ builder.Services.AddAuthentication(options =>
                         {
                             OnTokenValidated = t =>
                             {
-                                //var scope = t.HttpContext.RequestServices.CreateScope();
+                                var claimsIdentity = (ClaimsIdentity)t.Principal!.Identity!;
 
-                                var claimsIdentity = (ClaimsIdentity)t.Principal.Identity;
-
+                                // TODO: Retrieve custom claims
                                 claimsIdentity.AddClaim(new Claim("role", "ChristmasManager"));
                                 claimsIdentity.AddClaim(new Claim("role", "LetterReader"));
+
+                                // TODO: Upsert the user in the application database
 
                                 t.Properties!.ExpiresUtc = new JwtSecurityToken(t.TokenEndpointResponse!.AccessToken).ValidTo; // align expiration of the cookie with expiration of the access token
                                 t.Properties.IsPersistent = false;
