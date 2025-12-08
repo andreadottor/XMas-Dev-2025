@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="MissioneNataleProtetto.ApiService/MissioneNataleProtetto.ApiService.csproj" />
+  <Project Path="MissioneNataleProtetto.AppHost/MissioneNataleProtetto.AppHost.csproj" />
+  <Project Path="MissioneNataleProtetto.AuthSample1/MissioneNataleProtetto.AuthSample1.csproj" />
+  <Project Path="MissioneNataleProtetto.AuthSample2/MissioneNataleProtetto.AuthSample2.csproj" />
+  <Project Path="MissioneNataleProtetto.AuthSample3/MissioneNataleProtetto.AuthSample3.csproj" />
+  <Project Path="MissioneNataleProtetto.ServiceDefaults/MissioneNataleProtetto.ServiceDefaults.csproj" />
+  <Project Path="MissioneNataleProtetto.Web/MissioneNataleProtetto.Web.csproj" />
+</Solution>

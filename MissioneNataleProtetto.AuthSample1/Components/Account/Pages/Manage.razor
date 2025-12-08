@@ -1,0 +1,37 @@
+﻿@page "/account/manage"
+@attribute [Authorize]
+@using System.Security.Claims
+
+<h3>Manage</h3>
+
+<h4>User Claims</h4>
+
+@if (userClaims is not null && userClaims.Any())
+{
+    <ul>
+        @foreach (var claim in userClaims)
+        {
+            <li><strong>@claim.Type:</strong> @claim.Value</li>
+        }
+    </ul>
+}
+else
+{
+    <p>No claims found.</p>
+}
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthenticationStateTask { get; set; }
+
+    private IEnumerable<Claim>? userClaims;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AuthenticationStateTask is not null)
+        {
+            var authState = await AuthenticationStateTask;
+            userClaims = authState.User.Claims;
+        }
+    }
+}
