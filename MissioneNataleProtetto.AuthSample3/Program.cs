@@ -65,7 +65,6 @@ builder.Services.AddAuthentication(options =>
 
                                     if (isExpired && !string.IsNullOrWhiteSpace(refreshToken)) // session cookie expired?
                                     {
-                                        //var keycloakServiceClient = context.HttpContext.RequestServices.GetRequiredService<KeycloakServiceClient>();
                                         var keycloakServiceClient = context.HttpContext.RequestServices.GetRequiredService<HttpClient>();
 
                                         var response = await keycloakServiceClient.RequestRefreshTokenAsync(new RefreshTokenRequest
