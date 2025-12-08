@@ -14,12 +14,7 @@ var password = builder.AddParameter("password", secret: true, value: "admin");
 var keycloak = builder.AddKeycloak("keycloak", 8080, username, password)
                         .WithDataVolume()
                         //.WithRealmImport("./Realms")
-                        //.WithEnvironment("KC_HTTP_ENABLED", "true")
-                        //.WithEnvironment("KC_PROXY_HEADERS", "xforwarded")
-                        //.WithEnvironment("KC_HOSTNAME_STRICT", "false")
                         .WithLifetime(ContainerLifetime.Persistent);
-                      //.WithHttpsEndpoint(8081, 8443);
-                      //.WithRealmImport("./Realms");
 
 builder.AddProject<Projects.MissioneNataleProtetto_AuthSample1>("missionenataleprotetto-authsample1")
     .WithExternalHttpEndpoints()

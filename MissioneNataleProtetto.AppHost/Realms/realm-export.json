@@ -700,7 +700,7 @@
       "protocol": "openid-connect",
       "attributes": {
         "request.object.signature.alg": "any",
-        "post.logout.redirect.uris": "https://missionenataleprotetto_authsample3.dev.localhost:7088/signout-oidc##https://missionenataleprotetto_authsample3.dev.localhost:7088/signout-callback-oidc",
+        "post.logout.redirect.uris": "https://missionenataleprotetto_authsample3.dev.localhost:7088/signout-oidc##https://missionenataleprotetto_authsample3.dev.localhost:7088/signout-callback-oidc##https://missionenataleprotetto_authsample3.dev.localhost:7088/*",
         "frontchannel.logout.session.required": "true",
         "oauth2.device.authorization.grant.enabled": "false",
         "backchannel.logout.revoke.offline.tokens": "false",
