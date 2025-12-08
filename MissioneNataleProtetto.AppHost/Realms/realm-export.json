@@ -682,7 +682,7 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "**********",
+      "secret": "1vN1VIgowcNwnWxL4ZAjeRz0JTOEP7y6",
       "redirectUris": [
         "https://missionenataleprotetto_authsample3.dev.localhost:7088/signin-oidc",
         "https://missionenataleprotetto_authsample3.dev.localhost:7088/*"
@@ -1593,7 +1593,7 @@
         "showInAccountConsole": "ALWAYS",
         "syncMode": "LEGACY",
         "filteredByClaim": "false",
-        "clientSecret": "**********",
+        "clientport": "4ss8Q~DnBHdmZu19Sh4lc9MVXvRWXvLCVZpl_bX7",
         "caseSensitiveOriginalUsername": "false"
       }
     }
