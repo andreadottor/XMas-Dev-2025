@@ -1593,7 +1593,7 @@
         "showInAccountConsole": "ALWAYS",
         "syncMode": "LEGACY",
         "filteredByClaim": "false",
-        "clientport": "4ss8Q~DnBHdmZu19Sh4lc9MVXvRWXvLCVZpl_bX7",
+        "clientSecret": "4ss8Q~DnBHdmZu19Sh4lc9MVXvRWXvLCVZpl_bX7",
         "caseSensitiveOriginalUsername": "false"
       }
     }

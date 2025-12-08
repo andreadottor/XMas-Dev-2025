@@ -18,9 +18,6 @@
 
 
 @code {
-    private string? errorMessage;
-    private EditContext editContext = default!;
-
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
 
@@ -31,7 +28,6 @@
     {
         if (HttpMethods.IsGet(HttpContext.Request.Method))
         {
-            // Clear the existing external cookie to ensure a clean login process
             await HttpContext.ChallengeAsync(OpenIdConnectDefaults.AuthenticationScheme, 
                         new AuthenticationProperties { RedirectUri = ReturnUrl ?? "/" });
         }
