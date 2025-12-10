@@ -1,5 +1,7 @@
 ﻿@page "/weather"
-@attribute [Authorize(Roles = "ChristmasManager")]
+@* @attribute [Authorize(Roles = "ChristmasManager")] *@
+@* @attribute [Authorize(Policy = "IsSantasHelper")] *@
+
 @attribute [StreamRendering]
 
 <PageTitle>Weather</PageTitle>

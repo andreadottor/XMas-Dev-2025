@@ -5,3 +5,18 @@
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
+
+<hr />
+
+<AuthorizeView Roles="LetterReader">
+    <Authorized>
+        <p>User with role LetterReader.</p>
+        <hr />
+    </Authorized>
+</AuthorizeView>
+
+<AuthorizeView Policy="IsSantasHelper">
+    <Authorized>
+        <p>User respects the IsSantasHelper policy.</p>
+    </Authorized>
+</AuthorizeView>

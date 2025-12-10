@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MissioneNataleProtetto.AuthSample1.Components;
 using MissioneNataleProtetto.AuthSample1.Components.Account;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,14 @@ builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("IsSantasHelper", policy =>
+        policy.RequireAuthenticatedUser()
+              .RequireClaim(ClaimTypes.Role, "LetterReader"));
+});
+
 
 var app = builder.Build();
 
