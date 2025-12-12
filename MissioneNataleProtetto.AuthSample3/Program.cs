@@ -45,7 +45,6 @@ builder.Services.AddAuthentication(options =>
                     {
                         OnValidatePrincipal = async context =>
                         {
-                            // https://auth0.com/blog/exploring-auth0-aspnet-core-authentication-sdk/
                             if (context.Properties.Items.TryGetValue(".Token.access_token", out string? accessToken))
                             {
                                 if (context.Properties.Items.TryGetValue(".Token.refresh_token", out string? refreshToken))
@@ -53,7 +52,6 @@ builder.Services.AddAuthentication(options =>
                                     // this event is fired everytime the cookie has been validated by the cookie middleware, so basically during every authenticated request.
                                     // the decryption of the cookie has already happened so we have access to the identity + user claims
                                     // and cookie properties - expiration, etc..
-                                    // source: https://github.com/mderriey/aspnet-core-token-renewal/blob/2fd9abcc2abe92df2b6c4374ad3f2ce585b6f953/src/MvcClient/Startup.cs#L57
                                     var now = DateTimeOffset.UtcNow;
                                     var exp = context.Properties.ExpiresUtc.GetValueOrDefault().ToUnixTimeSeconds();
                                     var expiresAt = DateTimeOffset.Parse(context.Properties.Items[".Token.expires_at"]!);
@@ -107,8 +105,6 @@ builder.Services.AddAuthentication(options =>
                         options.ClientSecret = clientSecret;
                         options.ResponseType = OpenIdConnectResponseType.Code;
                         options.SignedOutRedirectUri = "/account/logout-completed";
-
-                        //options.Scope.Add("store:all");
                         options.GetClaimsFromUserInfoEndpoint = true;
                         options.RequireHttpsMetadata = false;
                         options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -127,11 +123,12 @@ builder.Services.AddAuthentication(options =>
                             {
                                 var claimsIdentity = (ClaimsIdentity)t.Principal!.Identity!;
 
-                                // TODO: Retrieve custom claims
+                                // Retrieve custom claims
                                 claimsIdentity.AddClaim(new Claim("role", "ChristmasManager"));
                                 claimsIdentity.AddClaim(new Claim("role", "LetterReader"));
 
-                                // TODO: Upsert the user in the application database
+                                // Upsert the user in the application database
+                                //
 
                                 t.Properties!.ExpiresUtc = new JwtSecurityToken(t.TokenEndpointResponse!.AccessToken).ValidTo; // align expiration of the cookie with expiration of the access token
                                 t.Properties.IsPersistent = false;
