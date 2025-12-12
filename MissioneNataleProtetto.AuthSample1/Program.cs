@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using MissioneNataleProtetto.AuthSample1.Components;
 using MissioneNataleProtetto.AuthSample1.Components.Account;
 using System.Security.Claims;
@@ -20,13 +21,10 @@ builder.Services
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie();
 
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("IsSantasHelper", policy =>
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("IsSantasHelper", policy =>
         policy.RequireAuthenticatedUser()
               .RequireClaim(ClaimTypes.Role, "LetterReader"));
-});
-
 
 var app = builder.Build();
 
